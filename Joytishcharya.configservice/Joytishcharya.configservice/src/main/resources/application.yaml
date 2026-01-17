@@ -1,0 +1,13 @@
+
+    server:
+      port: 8888
+
+    spring:
+      application:
+        name: Joytishcharya.configservice
+      cloud:
+        config:
+          server:
+            git:
+              uri: https://github.com/neelamnegi061997-hub/JyotishyaBackend.git
+
