@@ -11,3 +11,24 @@
             git:
               uri: https://github.com/neelamnegi061997-hub/JyotishyaBackend.git
 
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: health,info
+      endpoint:
+        health:
+          show-details: always
+    eureka:
+      instance:
+        lease-renewal-interval-in-seconds: 30
+        lease-expiration-duration-in-seconds: 90
+
+        spring:
+          cloud:
+            openfeign:
+              client:
+                config:
+                  default:
+                    connectTimeout: 5000
+                    readTimeout: 5000

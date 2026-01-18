@@ -1,3 +1,66 @@
+server:
+  port: 8080
+
 spring:
   application:
-    name: Joytishcharya.apigateway
+    name: JOYTISHCHARYA-API-GATEWAY
+
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 5s
+
+      routes:
+
+        # 🔓 AUTH ROUTES (NO REDIS / NO JWT)
+        - id: user-service-auth
+          uri: lb://JOYTISHCHARYA.USERSERVICE
+          predicates:
+            - Path=/auth/**
+
+        # 🔐 USER ROUTES (PROTECTED)
+        - id: user-service
+          uri: lb://JOYTISHCHARYA.USERSERVICE
+          predicates:
+            - Path=/users/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@userKeyResolver}"
+
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+                methods: GET,POST
+
+            - name: CircuitBreaker
+              args:
+                name: userServiceCB
+                fallbackUri: forward:/fallback/user
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    org.springframework.cloud.gateway.filter.factory.RequestRateLimiterGatewayFilterFactory: TRACE
+    org.springframework.data.redis: TRACE
