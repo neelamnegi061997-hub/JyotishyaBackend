@@ -64,3 +64,5 @@ logging:
     org.springframework.cloud.gateway: INFO
     org.springframework.cloud.gateway.filter.factory.RequestRateLimiterGatewayFilterFactory: TRACE
     org.springframework.data.redis: TRACE
+    org.springframework.cloud.circuitbreaker: DEBUG
+    io.github.resilience4j: DEBUG

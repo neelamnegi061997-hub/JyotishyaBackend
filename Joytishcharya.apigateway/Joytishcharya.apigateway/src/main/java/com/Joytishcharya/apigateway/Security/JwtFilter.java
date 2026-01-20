@@ -30,14 +30,14 @@ public class JwtFilter implements GlobalFilter {
             return chain.filter(exchange);
         }
 
-
-
         // ✅ PUBLIC ENDPOINTS (NO JWT REQUIRED)
         if (path.startsWith("/auth/")
                 || path.startsWith("/monitor/health")
+                || path.startsWith("/fallback")
                 || path.startsWith("/users/public")) {
             return chain.filter(exchange);
         }
+
 
 
         String authHeader = exchange.getRequest()
@@ -57,13 +57,7 @@ public class JwtFilter implements GlobalFilter {
                 return unauthorized(exchange);
             }
 
-            // 🔐 ADMIN-only endpoints
-            if (path.startsWith("/monitor")) {
-                String role = jwtUtil.getRole(claims);
-                if (!"ADMIN".equals(role)) {
-                    return forbidden(exchange);
-                }
-            }
+
 
         } catch (Exception e) {
             return unauthorized(exchange);
