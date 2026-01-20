@@ -1,6 +1,0 @@
-spring:
-  application:
-    name: jyotishcharya-bff-service
-
-server:
-  port: 8085
